@@ -21,3 +21,7 @@ add_custom_exe(timer_1_synchronously
     timer_1_synchronously.cpp
 )
 
+add_custom_exe(timer_2_asynchronously
+    timer_2_asynchronously.cpp
+)
+
