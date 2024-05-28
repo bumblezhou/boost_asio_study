@@ -36,3 +36,11 @@ add_custom_exe(timer_4_using_member_fun_as_handler
 add_custom_exe(timer_5_synchronising_completion_handlers
     timer_5_synchronising_completion_handlers.cpp
 )
+
+add_custom_exe(client
+    daytime_1_a_sync_tcp_datytime_client.cpp
+)
+
+add_custom_exe(server
+    daytime_2_a_sync_tcp_datytime_server.cpp
+)
