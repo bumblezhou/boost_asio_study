@@ -29,3 +29,8 @@ add_custom_exe(timer_3_binding_arguments_to_a_handler
     timer_3_binding_arguments_to_a_handler.cpp
 )
 
+add_custom_exe(timer_4_using_member_fun_as_handler
+    timer_4_using_member_fun_as_handler.cpp
+)
+
+
