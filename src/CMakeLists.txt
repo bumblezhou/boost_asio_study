@@ -25,3 +25,7 @@ add_custom_exe(timer_2_asynchronously
     timer_2_asynchronously.cpp
 )
 
+add_custom_exe(timer_3_binding_arguments_to_a_handler
+    timer_3_binding_arguments_to_a_handler.cpp
+)
+
