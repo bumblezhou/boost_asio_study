@@ -33,4 +33,6 @@ add_custom_exe(timer_4_using_member_fun_as_handler
     timer_4_using_member_fun_as_handler.cpp
 )
 
-
+add_custom_exe(timer_5_synchronising_completion_handlers
+    timer_5_synchronising_completion_handlers.cpp
+)
