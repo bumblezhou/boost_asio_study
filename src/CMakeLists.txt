@@ -38,9 +38,13 @@ add_custom_exe(timer_5_synchronising_completion_handlers
 )
 
 add_custom_exe(client
-    daytime_1_a_sync_tcp_datytime_client.cpp
+    daytime_1_a_sync_tcp_daytime_client.cpp
 )
 
-add_custom_exe(server
-    daytime_2_a_sync_tcp_datytime_server.cpp
+add_custom_exe(sync_server
+    daytime_2_a_sync_tcp_daytime_server.cpp
+)
+
+add_custom_exe(async_server
+    daytime_3_an_async_tcp_daytime_server.cpp
 )
