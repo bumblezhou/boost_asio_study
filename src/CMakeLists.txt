@@ -60,3 +60,7 @@ add_custom_exe(sync_udp_server
 add_custom_exe(async_udp_server
     daytime_6_an_async_udp_daytime_server.cpp
 )
+
+add_custom_exe(async_tcp_udp_server
+    daytime_7_async_tcp_udb_daytime_server.cpp
+)

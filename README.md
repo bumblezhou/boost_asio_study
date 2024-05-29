@@ -14,7 +14,7 @@ sudo apt install libboost-all-dev
 ```
 2. install VSCode
 3. install "C/C++ Extension Pack", "CMake Tools" extensions for VSCode
-4. build
+4. how to build
     * VSCode -> CTRL + SHIFT + P -> CMake: Configure
     * VSCode -> CTRL + SHIFT + P -> CMake: Build Target -> all
 
@@ -73,5 +73,18 @@ sudo apt install libboost-all-dev
     sudo ./build/src/async_udp_server
 
     [terminal 2]
+    ./build/src/udp_client localhost
+    ```
+
+7. combined async tcp and udp server
+    * sync udp server && udp client
+    ```bash
+    [terminal 1]
+    sudo ./build/src/async_tcp_udp_server
+
+    [terminal 2]
+    ./build/src/tcp_client localhost
+
+    [terminal 3]
     ./build/src/udp_client localhost
     ```
