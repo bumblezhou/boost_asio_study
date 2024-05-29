@@ -64,3 +64,5 @@ add_custom_exe(async_udp_server
 add_custom_exe(async_tcp_udp_server
     daytime_7_async_tcp_udb_daytime_server.cpp
 )
+
+add_subdirectory("examples/c++11/http_server1")
