@@ -21,70 +21,82 @@ sudo apt install libboost-all-dev
 ## How to run
 1. timer_1_synchronously
 ```bash
-./build/src/timer_1_synchronously
+./build/src/tutorial/timer_1_synchronously
 ```
 
 2. timer_2_asynchronously
 ```bash
-./build/src/timer_2_asynchronously
+./build/src/tutorial/timer_2_asynchronously
 ```
 
 3. timer_3_binding_arguments_to_a_handler
 ```bash
-./build/src/timer_3_binding_arguments_to_a_handler
+./build/src/tutorial/timer_3_binding_arguments_to_a_handler
 ```
 
 4. timer_4_using_member_fun_as_handler
 ```bash
-./build/src/timer_4_using_member_fun_as_handler
+./build/src/tutorial/timer_4_using_member_fun_as_handler
 ```
 
 5. tcp daytime client and tcp servers of sync and async
     * sync tcp server && tcp client
     ```bash
     [terminal 1]
-    sudo ./build/src/sync_tcp_server
+    sudo ./build/src/tutorial/sync_tcp_server
 
     [terminal 2]
-    ./build/src/tcp_client localhost
+    ./build/src/tutorial/tcp_client localhost
     ```
 
     * async tcp server && tcp client
     ```bash
     [terminal 1]
-    sudo ./build/src/async_tcp_server
+    sudo ./build/src/tutorial/async_tcp_server
 
     [terminal 2]
-    ./build/src/tcp_client localhost
+    ./build/src/tutorial/tcp_client localhost
     ```
 6. udp daytime client and udp servers of sync and async
     * sync udp server && udp client
     ```bash
     [terminal 1]
-    sudo ./build/src/sync_udp_server
+    sudo ./build/src/tutorial/sync_udp_server
 
     [terminal 2]
-    ./build/src/udp_client localhost
+    ./build/src/tutorial/udp_client localhost
     ```
 
     * async udp server && udp client
     ```bash
     [terminal 1]
-    sudo ./build/src/async_udp_server
+    sudo ./build/src/tutorial/async_udp_server
 
     [terminal 2]
-    ./build/src/udp_client localhost
+    ./build/src/tutorial/udp_client localhost
     ```
 
 7. combined async tcp and udp server
     * async tcp udp combined server && tcp/udp client
     ```bash
     [terminal 1]
-    sudo ./build/src/async_tcp_udp_server
+    sudo ./build/src/tutorial/async_tcp_udp_server
 
     [terminal 2]
-    ./build/src/tcp_client localhost
+    ./build/src/tutorial/tcp_client localhost
 
     [terminal 3]
-    ./build/src/udp_client localhost
+    ./build/src/tutorial/udp_client localhost
+    ```
+
+8. http server v1
+    * open http server v1
+    ```bash
+    [terminal 1]
+    sudo ./build/src/examples/c++11/http_server1/http_server1 0.0.0.0 80 ./static/
+    ```
+    * open service it served:
+    ```bash
+    [browser]
+    http://localhost/
     ```
