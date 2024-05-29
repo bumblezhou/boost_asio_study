@@ -37,14 +37,22 @@ add_custom_exe(timer_5_synchronising_completion_handlers
     timer_5_synchronising_completion_handlers.cpp
 )
 
-add_custom_exe(client
+add_custom_exe(tcp_client
     daytime_1_a_sync_tcp_daytime_client.cpp
 )
 
-add_custom_exe(sync_server
+add_custom_exe(sync_tcp_server
     daytime_2_a_sync_tcp_daytime_server.cpp
 )
 
-add_custom_exe(async_server
+add_custom_exe(async_tcp_server
     daytime_3_an_async_tcp_daytime_server.cpp
+)
+
+add_custom_exe(udp_client
+    daytime_4_a_sync_udp_daytime_client.cpp
+)
+
+add_custom_exe(sync_udp_server
+    daytime_5_a_sync_udp_daytime_server.cpp
 )
