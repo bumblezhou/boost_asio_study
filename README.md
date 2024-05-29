@@ -77,7 +77,7 @@ sudo apt install libboost-all-dev
     ```
 
 7. combined async tcp and udp server
-    * sync udp server && udp client
+    * async tcp udp combined server && tcp/udp client
     ```bash
     [terminal 1]
     sudo ./build/src/async_tcp_udp_server
