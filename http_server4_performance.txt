@@ -1,0 +1,115 @@
+============================================================================
+ab -n 1000 -c 10 http://172.16.209.44/
+============================================================================
+
+This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 172.16.209.44 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        172.16.209.44
+Server Port:            80
+
+Document Path:          /
+Document Length:        1401 bytes
+
+Concurrency Level:      10
+Time taken for tests:   0.391 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      1467000 bytes
+HTML transferred:       1401000 bytes
+Requests per second:    2554.68 [#/sec] (mean)
+Time per request:       3.914 [ms] (mean)
+Time per request:       0.391 [ms] (mean, across all concurrent requests)
+Transfer rate:          3659.88 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   1.0      1       7
+Processing:     1    2   1.2      2       7
+Waiting:        0    2   1.2      2       7
+Total:          1    4   1.5      3       9
+
+Percentage of the requests served within a certain time (ms)
+  50%      3
+  66%      4
+  75%      5
+  80%      5
+  90%      6
+  95%      7
+  98%      8
+  99%      8
+ 100%      9 (longest request)
+
+============================================================================
+ab -n 10000 -c 20 http://172.16.209.44/
+============================================================================
+
+This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 172.16.209.44 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        
+Server Hostname:        172.16.209.44
+Server Port:            80
+
+Document Path:          /
+Document Length:        1401 bytes
+
+Concurrency Level:      20
+Time taken for tests:   7.453 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      14670000 bytes
+HTML transferred:       14010000 bytes
+Requests per second:    1341.69 [#/sec] (mean)
+Time per request:       14.907 [ms] (mean)
+Time per request:       0.745 [ms] (mean, across all concurrent requests)
+Transfer rate:          1922.13 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        2    7   1.8      7      18
+Processing:     2    8   1.8      7      18
+Waiting:        0    7   1.8      7      18
+Total:          6   15   1.9     15      25
+
+Percentage of the requests served within a certain time (ms)
+  50%     15
+  66%     15
+  75%     15
+  80%     16
+  90%     17
+  95%     18
+  98%     21
+  99%     22
+ 100%     25 (longest request)

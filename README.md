@@ -120,7 +120,7 @@ sudo apt install libboost-all-dev
     * Usage: http_server3 <address> <port> <threads> <doc_root>
     ```bash
     [terminal 1]
-    sudo ./build/src/examples/c++11/http_server3/http_server3 0.0.0.0 80 3 ./static/
+    sudo ./build/src/examples/c++11/http_server3/http_server3 0.0.0.0 80 4 ./static/
     ```
     * open service it served:
     ```bash
@@ -139,4 +139,15 @@ sudo apt install libboost-all-dev
     ```bash
     [browser]
     http://localhost/
+    ```
+
+## How to do performance benchmarking for http servers:
+    * Install Apache Bench
+    ```bash
+    sudo apt update && sudo apt install apache2-utils -y
+    ```
+    * Do performance benchmarking:
+    ```bash
+    ap -n <total_requests> -c <concurrenct_count> http://target_url
+    ab -n 1000 -c 10 http://localhost/
     ```

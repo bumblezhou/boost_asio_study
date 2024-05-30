@@ -41,7 +41,7 @@ void server::run() {
   // Create a pool of threads to run the io_context.
   std::vector<std::thread> threads;
   for (std::size_t i = 0; i < thread_pool_size_; ++i) {
-    threads.emplace_back([this]{ std::cout << "thread " << std::this_thread::get_id() << " joined." << std::endl; io_context_.run(); });
+    threads.emplace_back([this]{ /*std::cout << "thread " << std::this_thread::get_id() << " joined." << std::endl; */ io_context_.run(); });
   }
 
   // Wait for all threads in the pool to exit.
@@ -61,7 +61,7 @@ void server::do_accept() {
         return;
       }
 
-      std::cout << "[server::do_accept()] Current thread=>" << std::this_thread::get_id() << std::endl;
+      // std::cout << "[server::do_accept()] Current thread=>" << std::this_thread::get_id() << std::endl;
 
       if (!ec) {
         std::make_shared<connection>(std::move(socket), request_handler_)->start();
