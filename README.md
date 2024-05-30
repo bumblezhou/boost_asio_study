@@ -127,3 +127,16 @@ sudo apt install libboost-all-dev
     [browser]
     http://localhost/
     ```
+
+11. http server v4
+    * open http server v4: A single-threaded HTTP server implemented using stackless coroutines.
+    * Usage: http_server4 <address> <port> <doc_root>
+    ```bash
+    [terminal 1]
+    sudo ./build/src/examples/c++11/http_server4/http_server4 0.0.0.0 80 ./static/
+    ```
+    * open service it served:
+    ```bash
+    [browser]
+    http://localhost/
+    ```
