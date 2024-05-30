@@ -114,3 +114,16 @@ sudo apt install libboost-all-dev
     [browser]
     http://localhost/
     ```
+
+10. http server v3
+    * open http server v3: An HTTP server using a single io_context and a thread pool calling io_context::run().
+    * Usage: http_server3 <address> <port> <threads> <doc_root>
+    ```bash
+    [terminal 1]
+    sudo ./build/src/examples/c++11/http_server3/http_server3 0.0.0.0 80 3 ./static/
+    ```
+    * open service it served:
+    ```bash
+    [browser]
+    http://localhost/
+    ```
