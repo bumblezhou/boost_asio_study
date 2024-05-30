@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'MaShanZheng';
+  src: url('../font/MaShanZheng-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.ma-shan-zheng-regular {
+  font-family: "MaShanZheng", cursive;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 40px;
+  background-color: bisque;
+  color: brown;
+}
+p {
+  margin: 10px 0 10px 0;
+  padding: 0;
+}

@@ -2,18 +2,19 @@
 #include <utility>
 #include "connection_manager.hpp"
 #include "request_handler.hpp"
+#include <thread>
+#include <iostream>
 
 namespace http {
 namespace server {
 
-connection::connection(boost::asio::ip::tcp::socket socket,
-    connection_manager& conn_manager,
-    request_handler& req_handler)
+connection::connection(boost::asio::ip::tcp::socket socket, connection_manager& conn_manager, request_handler& req_handler)
     : socket_(std::move(socket)),
     connection_manager_(conn_manager),
     request_handler_(req_handler) { }
 
 void connection::start(){
+    std::cout << "[connection::start()] Current thread=>" << std::this_thread::get_id() << std::endl;
     do_read();
 }
 

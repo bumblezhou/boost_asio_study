@@ -90,10 +90,24 @@ sudo apt install libboost-all-dev
     ```
 
 8. http server v1
-    * open http server v1
+    * open http server v1: A simple single-threaded server implementation of HTTP 1.0
+    * Usage: http_server1 <address> <port> <doc_root>
     ```bash
     [terminal 1]
     sudo ./build/src/examples/c++11/http_server1/http_server1 0.0.0.0 80 ./static/
+    ```
+    * open service it served:
+    ```bash
+    [browser]
+    http://localhost/
+    ```
+
+9. http server v2
+    * open http server v2: An HTTP server using an io_context-per-CPU design.
+    * Usage: http_server2 <address> <port> <threads> <doc_root>
+    ```bash
+    [terminal 1]
+    sudo ./build/src/examples/c++11/http_server2/http_server2 0.0.0.0 80 3 ./static/
     ```
     * open service it served:
     ```bash

@@ -19,3 +19,4 @@ endmacro()
 
 add_subdirectory("tutorial")
 add_subdirectory("examples/c++11/http_server1")
+add_subdirectory("examples/c++11/http_server2")
