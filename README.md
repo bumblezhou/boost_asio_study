@@ -141,6 +141,25 @@ sudo apt install libboost-all-dev
     http://localhost/
     ```
 
+12. chat
+    * This example implements a chat server and client. The programs use a custom protocol with a fixed length message header and variable length message body.
+    * Usage: chat_server <host> <port>
+    * Usage: chat_client <host> <port>
+    ```bash
+    [terminal 1]
+    sudo ./build/src/examples/c++11/chat/chat_server local 8080
+    [terminal 2]
+    sudo ./build/src/examples/c++11/chat/chat_client local 8080
+    ```
+
+13. Operations
+    * Examples showing how to implement composed asynchronous operations as reusable library functions.
+    * Usage: composed_1
+    ```bash
+    sudo ./build/src/examples/c++11/operations/composed_1
+    ```
+
+
 ## How to do performance benchmarking for http servers:
     * Install Apache Bench
     ```bash
