@@ -36,10 +36,7 @@ int main() {
     std::cout << "result is: " << result << "\n";
   });
 
-  // std::cout << "Execute 2nd:\n";
-  // async_wait_twice(timer, [](int result) {
-  //   std::cout << "result is: " << result << "\n";
-  // });
+  // Uncomment the following line to trigger an error in async_wait_twice.
   // timer.cancel();
 
   ctx.run();

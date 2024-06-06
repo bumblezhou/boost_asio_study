@@ -17,3 +17,11 @@ add_custom_exe(deferred_4
 add_custom_exe(deferred_5
     deferred_5.cpp
 )
+
+add_custom_exe(deferred_6
+    deferred_6.cpp
+)
+
+add_custom_exe(deferred_7
+    deferred_7.cpp
+)

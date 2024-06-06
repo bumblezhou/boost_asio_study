@@ -159,6 +159,14 @@ sudo apt install libboost-all-dev
     sudo ./build/src/examples/c++11/operations/composed_1
     ```
 
+14. Deferred
+    * Examples showing how to use the deferred completion token.
+    * Usage: deferred_1
+    ```bash
+    sudo ./build/src/examples/c++11/deferred/deferred_1
+    sudo ./build/src/examples/c++11/deferred/deferred_x
+    sudo ./build/src/examples/c++11/deferred/deferred_7
+    ```
 
 ## How to do performance benchmarking for http servers:
     * Install Apache Bench
