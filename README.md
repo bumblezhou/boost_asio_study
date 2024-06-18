@@ -189,3 +189,41 @@ sudo apt install libboost-all-dev
     ap -n <total_requests> -c <concurrenct_count> http://target_url
     ab -n 1000 -c 10 http://localhost/
     ```
+## How to publish local video file to living stream:
+    * Running ossrs
+    ```bash
+    docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 ossrs/srs:5
+    ```
+    * Download sample video file:
+    ```bash
+    wget http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
+    ```
+    * Push local video to living stream:
+    ```bash
+    ffmpeg -re -i ~/Desktop/Tmp/BigBuckBunny.mp4 -c copy -f flv rtmp://localhost/live/livestream
+    ```
+    * Reference living stream to html5 page:
+    ```html
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>H5(HTTP-FLV) Example</title>
+        <script src="https://cdn.jsdelivr.net/npm/flv.js@1.5.0/dist/flv.min.js"></script>
+        </head>
+        <body>
+        <video id="videoElement" controls autoplay></video>
+        <script>
+        if (flvjs.isSupported()) {
+            var videoElement = document.getElementById('videoElement');
+            var flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: 'http://localhost:8080/live/livestream.flv'
+            });
+            flvPlayer.attachMediaElement(videoElement);
+            flvPlayer.load();
+            // flvPlayer.play();
+        }
+        </script>
+        </body>
+        </html>
+    ```
