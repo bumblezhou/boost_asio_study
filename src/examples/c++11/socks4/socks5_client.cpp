@@ -10,7 +10,10 @@ int main() {
     tcp::socket socket(io_context);
 
     // Connect to the SOCKS5 proxy server
-    socket.connect(tcp::endpoint(boost::asio::ip::address::from_string("0.0.0.0"), 8080));
+    boost::asio::ip::tcp::resolver resolver(io_context);
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("localhost", "1080");
+    boost::asio::connect(socket, endpoints);
+    std::cout << "[socks5_client] connect socks5 server successfully.\n";
 
     // Perform SOCKS5 handshake with the proxy server
     std::array<char, 3> handshake = {0x05, 0x01, 0x00};
@@ -27,42 +30,40 @@ int main() {
     std::cout << "[socks5_client] SOCKS5 handshake successfull.\n";
 
     // Send the request for the target server
-    std::string target_address = "www.google.com";
+    std::string target_address = "localhost";
     unsigned short target_port = 80;
 
-    constexpr size_t header_length = 7 + 14;
+    constexpr size_t header_length = 7 + 9;
 
-    std::array<char, 21> request_header = {
+    std::array<char, 16> request_header = {
         0x05, 0x01, 0x00, 0x03, static_cast<char>(target_address.length())
     };
 
     std::copy(target_address.begin(), target_address.end(), request_header.begin() + 5);
-    request_header[5 + target_address.length()] = (target_port >> 8) & 0xFF;
-    request_header[6 + target_address.length()] = target_port & 0xFF;
+    request_header[14] = (target_port >> 8) & 0xFF;
+    request_header[15] = target_port & 0xFF;
+    printf("[socks5_client] request_header[14]:0x%x, request_header[15]:0x%x\n", request_header[14], request_header[15]);
 
     std::cout << "[socks5_client] send SOCKS5 http request.\n";
     boost::asio::write(socket, boost::asio::buffer(request_header));
 
-    // Receive the response from the proxy server
-    std::array<char, 10> response;
-    boost::asio::read(socket, boost::asio::buffer(response));
-    if (response[1] != 0x00) {
-        throw std::runtime_error("Connection to target server failed");
+    // Read and print the response
+    boost::asio::streambuf response;
+    boost::system::error_code error;
+
+    while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error)) {
+        std::cout << &response;
+        response.consume(response.size());
     }
-    std::cout << "[socks5_client] receive SOCKS5 http response.\n";
 
-    // Start relaying data between the client and the target server
-    std::array<char, 8192> buffer;
-    std::size_t bytes_transferred;
-
-    while ((bytes_transferred = socket.read_some(boost::asio::buffer(buffer))) > 0) {
-        // Process the received data from the target server
-
-        // Optionally, perform any additional processing or modifications
-
-        // Send the processed data back to the target server
-        boost::asio::write(socket, boost::asio::buffer(buffer, bytes_transferred));
+    if (error != boost::asio::error::eof) {
+        std::cerr << "Error reading response: " << error.message() << std::endl;
     }
+
+    // Close the socket
+    boost::system::error_code ec;
+    socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    socket.close();
   }
   catch (std::exception& e) {
       std::cerr << "Error: " << e.what() << std::endl;

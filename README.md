@@ -172,11 +172,15 @@ sudo apt install libboost-all-dev
     * Example client program implementing the SOCKS 4 protocol for communication via a proxy.
     * Usage: request_with_proxy
     * Usage: request_without_proxy
+    * Usage: socks5_server
+    * Usage: socks5_client
     ```bash
     ./build/src/examples/c++11/socks4/request_with_proxy
     ./build/src/examples/c++11/socks4/request_without_proxy localhost 80 /
     ./build/src/examples/c++11/socks4/request_without_proxy 127.0.0.1 http /
     ./build/src/examples/c++11/socks4/request_without_proxy https /doc/libs/1_85_0/doc/html/boost_asio/example/cpp11/socks4/sync_client.cpp
+    sudo ./build/src/examples/c++11/socks4/socks5_server
+    ./build/src/examples/c++11/socks4/socks5_client
     ```
 
 ## How to do performance benchmarking for http servers:
