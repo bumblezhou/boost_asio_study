@@ -36,6 +36,8 @@ void handle_client(tcp::socket client_socket) {
     std::cout << "[socks5_server] receive http request_header[3]: " << std::string("") + request_header[3] << std::endl;
 
     std::string target_address;
+    std::string domain_name;
+    std::string relative_url;
     switch (request_header[3]) {
       case 0x01: // IPv4 address
       {
@@ -48,13 +50,19 @@ void handle_client(tcp::socket client_socket) {
       }
       case 0x03: // Domain name
       {
-          std::array<char, 1> domain_length;
-          boost::asio::read(client_socket, boost::asio::buffer(domain_length));
+          std::array<char, 1> url_length;
+          boost::asio::read(client_socket, boost::asio::buffer(url_length));
           
-          std::vector<char> domain_name(domain_length[0]);
-          std::cout << "[socks5_server] 0x03 domain_length[0]:" << std::string("") + domain_length[0] << std::endl;
-          boost::asio::read(client_socket, boost::asio::buffer(domain_name));
-          target_address = std::string(domain_name.begin(), domain_name.end());
+          std::vector<char> url(url_length[0]);
+          std::cout << "[socks5_server] 0x03 url_length[0]:" << std::string("") + url_length[0] << std::endl;
+          boost::asio::read(client_socket, boost::asio::buffer(url));
+          target_address = std::string(url.begin(), url.end());
+
+          std::size_t pos = target_address.find('/');
+          if (pos != std::string::npos) {
+            domain_name = target_address.substr(0, pos);
+            relative_url = target_address.substr(pos);
+          }
           std::cout << "[socks5_server] 0x03 target_address:" << target_address << std::endl;
           break;
       }
@@ -90,20 +98,16 @@ void handle_client(tcp::socket client_socket) {
     std::cout << "[socks5_server] create server socket." << std::endl;
 
     boost::asio::ip::tcp::resolver resolver(client_socket.get_executor());
-    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(target_address, std::to_string(target_port).c_str());
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(domain_name, std::to_string(target_port).c_str());
     boost::asio::connect(server_socket, endpoints);
     std::cout << "[socks5_server] connect server socket." << std::endl;
 
-    // // Send a successful response to the client indicating connection establishment
-    // std::array<char, 10> response = {0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    // boost::asio::write(client_socket, boost::asio::buffer(response));
-    // std::cout << "[socks5_server] connection establishment!" << std::endl;
-
-    std::string request = "GET / HTTP/1.1\r\n"
-                        "Host: " + target_address + "\r\n"
+    std::string request = "GET " + relative_url + " HTTP/1.1\r\n"
+                        "Host: " + domain_name + "\r\n"
                         "Connection: close\r\n\r\n";
     boost::asio::write(server_socket, boost::asio::buffer(request));
-    std::cout << "[socks5_server] send HTTP request ." << std::endl;
+    std::cout << "[socks5_server] send HTTP request:" << std::endl;
+    std::cout << request;
 
     // Read and print the response
     boost::asio::streambuf response;
@@ -111,7 +115,7 @@ void handle_client(tcp::socket client_socket) {
 
     while (boost::asio::read(server_socket, response, boost::asio::transfer_at_least(1), error)) {
       boost::asio::write(client_socket, boost::asio::buffer(response.data()));
-      std::cout << "[socks5_server] response to socks client." << std::endl;
+      std::cout << "[socks5_server] response to socks client with size:" << response.size() << std::endl;
       response.consume(response.size());
     }
 

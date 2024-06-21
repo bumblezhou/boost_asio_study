@@ -30,22 +30,16 @@ int main() {
     std::cout << "[socks5_client] SOCKS5 handshake successfull.\n";
 
     // Send the request for the target server
-    std::string target_address = "localhost";
+    std::string target_url = "localhost/index.html";
     unsigned short target_port = 80;
-    // std::string target_url = "/";
-
-    size_t header_length = 7 + target_address.size();
 
     std::vector<char> request_header{
-        0x05, 0x01, 0x00, 0x03, static_cast<char>(target_address.length())
+        0x05, 0x01, 0x00, 0x03, static_cast<char>(target_url.length())
     };
-    request_header.resize(header_length);
-
-    std::copy(target_address.begin(), target_address.end(), request_header.begin() + 5);
-    request_header[5 + target_address.size()] = (target_port >> 8) & 0xFF;
-    request_header[5 + target_address.size() + 1] = target_port & 0xFF;
-    // std::copy(target_url.begin(), target_url.end(), request_header.begin() + 5 + target_address.size() + 2);
-    printf("[socks5_client] request_header[14]:0x%x, request_header[15]:0x%x\n", request_header[14], request_header[15]);
+    request_header.insert(request_header.end(), target_url.begin(), target_url.end());
+    request_header.push_back(static_cast<char>((target_port >> 8) & 0xFF));
+    request_header.push_back(static_cast<char>(target_port & 0xFF));
+    printf("[socks5_client] request_header[size-2]:0x%x, request_header[size-1]:0x%x\n", request_header[request_header.size()-2], request_header[request_header.size()-1]);
     std::cout << "[socks5_client] request_header size:" << request_header.size() << "\n";
 
     std::cout << "[socks5_client] send SOCKS5 http request.\n";
@@ -59,6 +53,7 @@ int main() {
         std::cout << &response;
         response.consume(response.size());
     }
+    std::cout << std::endl;
 
     if (error != boost::asio::error::eof) {
         std::cerr << "Error reading response: " << error.message() << std::endl;
