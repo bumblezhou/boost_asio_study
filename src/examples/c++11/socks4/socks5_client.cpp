@@ -32,17 +32,21 @@ int main() {
     // Send the request for the target server
     std::string target_address = "localhost";
     unsigned short target_port = 80;
+    // std::string target_url = "/";
 
-    constexpr size_t header_length = 7 + 9;
+    size_t header_length = 7 + target_address.size();
 
-    std::array<char, 16> request_header = {
+    std::vector<char> request_header{
         0x05, 0x01, 0x00, 0x03, static_cast<char>(target_address.length())
     };
+    request_header.resize(header_length);
 
     std::copy(target_address.begin(), target_address.end(), request_header.begin() + 5);
-    request_header[14] = (target_port >> 8) & 0xFF;
-    request_header[15] = target_port & 0xFF;
+    request_header[5 + target_address.size()] = (target_port >> 8) & 0xFF;
+    request_header[5 + target_address.size() + 1] = target_port & 0xFF;
+    // std::copy(target_url.begin(), target_url.end(), request_header.begin() + 5 + target_address.size() + 2);
     printf("[socks5_client] request_header[14]:0x%x, request_header[15]:0x%x\n", request_header[14], request_header[15]);
+    std::cout << "[socks5_client] request_header size:" << request_header.size() << "\n";
 
     std::cout << "[socks5_client] send SOCKS5 http request.\n";
     boost::asio::write(socket, boost::asio::buffer(request_header));
