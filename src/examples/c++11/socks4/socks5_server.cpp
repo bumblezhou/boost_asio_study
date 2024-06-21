@@ -80,6 +80,11 @@ void handle_client(tcp::socket client_socket) {
     target_port = target_port | port_data[1];
     std::cout << "[socks5_server] target_port:" << target_port << std::endl;
 
+    // std::array<char, 3> user_data;
+    // boost::asio::read(client_socket, boost::asio::buffer(user_data));
+    // std::string user_data_str{user_data.data()};
+    // std::cout << "[socks5_server] user_data:" << user_data_str << std::endl;
+
     // Connect to the target server
     tcp::socket server_socket(client_socket.get_executor());
     std::cout << "[socks5_server] create server socket." << std::endl;
@@ -104,26 +109,10 @@ void handle_client(tcp::socket client_socket) {
     boost::asio::streambuf response;
     boost::system::error_code error;
 
-    std::array<char, 1024> client_buffer;
     while (boost::asio::read(server_socket, response, boost::asio::transfer_at_least(1), error)) {
-      // std::cout << &response;
-      const std::size_t response_size {response.size()};
-      if (response_size > 1024) {
-        std::size_t sent_size {0UL};
-        auto response_data = response.data();
-        while (sent_size < response_size) {
-          (bool)client_buffer.empty();
-          boost::asio::buffer_copy(boost::asio::buffer(client_buffer), response_data, 1024);
-          boost::asio::write(client_socket, boost::asio::buffer(client_buffer));
-          sent_size += 1024;
-        }
-        std::cout << "[socks5_server] response to socks client." << std::endl;
-      } else {
-        boost::asio::buffer_copy(boost::asio::buffer(client_buffer), response.data());
-        boost::asio::write(client_socket, boost::asio::buffer(client_buffer));
-        std::cout << "[socks5_server] response to socks client." << std::endl;
-      }
-      response.consume(response_size);
+      boost::asio::write(client_socket, boost::asio::buffer(response.data()));
+      std::cout << "[socks5_server] response to socks client." << std::endl;
+      response.consume(response.size());
     }
 
     if (error != boost::asio::error::eof) {
