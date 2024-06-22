@@ -11,16 +11,16 @@ int main() {
 
     // Connect to the SOCKS5 proxy server
     boost::asio::ip::tcp::resolver resolver(io_context);
-    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("localhost", "1080");
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("localhost", "2080");
     boost::asio::connect(socket, endpoints);
     std::cout << "[socks5_client] connect socks5 server successfully.\n";
 
     // Perform SOCKS5 handshake with the proxy server
-    std::array<char, 3> handshake = {0x05, 0x01, 0x00};
+    std::array<std::uint8_t, 3> handshake = {0x05, 0x01, 0x00};
     boost::asio::write(socket, boost::asio::buffer(handshake));
     std::cout << "[socks5_client] send SOCKS5 handshake request.\n";
 
-    std::array<char, 2> handshake_response;
+    std::array<std::uint8_t, 2> handshake_response;
     boost::asio::read(socket, boost::asio::buffer(handshake_response));
 
     if (handshake_response[0] != 0x05 || handshake_response[1] != 0x00) {
@@ -30,15 +30,18 @@ int main() {
     std::cout << "[socks5_client] SOCKS5 handshake successfull.\n";
 
     // Send the request for the target server
-    std::string target_url = "localhost/index.html";
-    unsigned short target_port = 80;
+    // std::string target_url = "localhost/index.html";
+    // unsigned short target_port = 80;
 
-    std::vector<char> request_header{
-        0x05, 0x01, 0x00, 0x03, static_cast<char>(target_url.length())
+    std::string target_url = "www.solidot.org/story?sid=78496";
+    unsigned short target_port = 443;
+
+    std::vector<std::uint8_t> request_header{
+        0x05, 0x01, 0x00, 0x03, static_cast<std::uint8_t>(target_url.length())
     };
     request_header.insert(request_header.end(), target_url.begin(), target_url.end());
-    request_header.push_back(static_cast<char>((target_port >> 8) & 0xFF));
-    request_header.push_back(static_cast<char>(target_port & 0xFF));
+    request_header.push_back(static_cast<std::uint8_t>((target_port >> 8) & 0xFF));
+    request_header.push_back(static_cast<std::uint8_t>(target_port & 0xFF));
     printf("[socks5_client] request_header[size-2]:0x%x, request_header[size-1]:0x%x\n", request_header[request_header.size()-2], request_header[request_header.size()-1]);
     std::cout << "[socks5_client] request_header size:" << request_header.size() << "\n";
 

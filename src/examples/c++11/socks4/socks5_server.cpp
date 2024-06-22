@@ -8,16 +8,16 @@ void handle_client(tcp::socket client_socket) {
     // Perform SOCKS5 handshake with the client
 
     // Read and verify the SOCKS5 version and authentication methods
-    std::array<char, 3> handshake;
+    std::array<std::uint8_t, 3> handshake;
     boost::asio::read(client_socket, boost::asio::buffer(handshake));
     if (handshake[0] != 0x05) {
         throw std::runtime_error("Invalid SOCKS5 version");
     }
 
     std::cout << "[socks5_server] receive SOCKS5 handshake request.\n";
-    std::cout << "[socks5_server] receive handshake[0]:" << std::string("") + handshake[0] << std::endl;
-    std::cout << "[socks5_server] receive handshake[1]:" << std::string("") + handshake[1] << std::endl;
-    std::cout << "[socks5_server] receive handshake[2]:" << std::string("") + handshake[2] << std::endl;
+    std::cout << "[socks5_server] receive handshake[0]:" << handshake[0] << std::endl;
+    std::cout << "[socks5_server] receive handshake[1]:" << handshake[1] << std::endl;
+    std::cout << "[socks5_server] receive handshake[2]:" << handshake[2] << std::endl;
 
     // Respond with the supported version and chosen authentication method
     std::array<char, 2> handshake_response = {0x05, 0x00};
@@ -25,7 +25,7 @@ void handle_client(tcp::socket client_socket) {
     std::cout << "[socks5_server] SOCKS5 handshake successfull.\n";
 
     // Read the client's request for target server
-    std::array<char, 4> request_header;
+    std::array<std::uint8_t, 4> request_header;
     std::cout << "[socks5_server] receive SOCKS5 http request.\n";
     boost::asio::read(client_socket, boost::asio::buffer(request_header));
 
@@ -33,7 +33,7 @@ void handle_client(tcp::socket client_socket) {
         throw std::runtime_error("Invalid SOCKS5 request");
     }
 
-    std::cout << "[socks5_server] receive http request_header[3]: " << std::string("") + request_header[3] << std::endl;
+    std::cout << "[socks5_server] receive http request_header[3]: " << request_header[3] << std::endl;
 
     std::string target_address;
     std::string domain_name;
@@ -41,7 +41,7 @@ void handle_client(tcp::socket client_socket) {
     switch (request_header[3]) {
       case 0x01: // IPv4 address
       {
-          std::array<char, 4> ipv4_address;
+          std::array<std::uint8_t, 4> ipv4_address;
           boost::asio::read(client_socket, boost::asio::buffer(ipv4_address));
           
           target_address = boost::asio::ip::address_v4(*reinterpret_cast<boost::asio::ip::address_v4::bytes_type*>(ipv4_address.data())).to_string();
@@ -50,11 +50,11 @@ void handle_client(tcp::socket client_socket) {
       }
       case 0x03: // Domain name
       {
-          std::array<char, 1> url_length;
+          std::array<std::uint8_t, 1> url_length;
           boost::asio::read(client_socket, boost::asio::buffer(url_length));
           
-          std::vector<char> url(url_length[0]);
-          std::cout << "[socks5_server] 0x03 url_length[0]:" << std::string("") + url_length[0] << std::endl;
+          std::vector<std::uint8_t> url(url_length[0]);
+          std::cout << "[socks5_server] 0x03 url_length[0]:" << url_length[0] << std::endl;
           boost::asio::read(client_socket, boost::asio::buffer(url));
           target_address = std::string(url.begin(), url.end());
 
@@ -68,7 +68,7 @@ void handle_client(tcp::socket client_socket) {
       }
       case 0x04: // IPv6 address
       {
-          std::array<char, 16> ipv6_address;
+          std::array<std::uint8_t, 16> ipv6_address;
           boost::asio::read(client_socket, boost::asio::buffer(ipv6_address));
           target_address = boost::asio::ip::address_v6(*reinterpret_cast<boost::asio::ip::address_v6::bytes_type*>(ipv6_address.data())).to_string();
           std::cout << "[socks5_server] 0x04 target_address:" << target_address << std::endl;
@@ -79,7 +79,7 @@ void handle_client(tcp::socket client_socket) {
       }
     }
 
-    std::array<char, 2> port_data;
+    std::array<std::uint8_t, 2> port_data;
     boost::asio::read(client_socket, boost::asio::buffer(port_data));
     printf("[socks5_server] port_data[0]:0x%x, port_data[1]:0x%x\n", port_data[0], port_data[1]);
     unsigned short target_port;
@@ -88,7 +88,7 @@ void handle_client(tcp::socket client_socket) {
     target_port = target_port | port_data[1];
     std::cout << "[socks5_server] target_port:" << target_port << std::endl;
 
-    // std::array<char, 3> user_data;
+    // std::array<std::uint8_t, 3> user_data;
     // boost::asio::read(client_socket, boost::asio::buffer(user_data));
     // std::string user_data_str{user_data.data()};
     // std::cout << "[socks5_server] user_data:" << user_data_str << std::endl;
@@ -136,7 +136,7 @@ void handle_client(tcp::socket client_socket) {
 int main() {
   try {
       boost::asio::io_context io_context;
-      tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 1080));
+      tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 2080));
 
       while (true) {
           tcp::socket client_socket = acceptor.accept();
