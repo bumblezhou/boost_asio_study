@@ -11,6 +11,7 @@ sudo apt install build-essential
 
 sudo apt update
 sudo apt install libboost-all-dev
+sudo apt install libssl-dev
 ```
 2. install VSCode
 3. install "C/C++ Extension Pack", "CMake Tools" extensions for VSCode

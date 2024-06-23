@@ -11,6 +11,8 @@ macro(add_custom_exe TARGET_NAME)
     )
     target_link_libraries(${TARGET_NAME} PRIVATE
         pthread
+        ssl
+        crypto
     )
     target_compile_features(${TARGET_NAME} PRIVATE
         cxx_std_17

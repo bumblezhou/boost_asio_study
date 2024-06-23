@@ -1,7 +1,9 @@
 #include <iostream>
+#include <boost/asio/ssl.hpp>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
+namespace ssl = boost::asio::ssl;
 
 void handle_client(tcp::socket client_socket) {
   try {
@@ -62,6 +64,9 @@ void handle_client(tcp::socket client_socket) {
           if (pos != std::string::npos) {
             domain_name = target_address.substr(0, pos);
             relative_url = target_address.substr(pos);
+          } else {
+            domain_name = target_address;
+            relative_url = "/";
           }
           std::cout << "[socks5_server] 0x03 target_address:" << target_address << std::endl;
           break;
@@ -88,19 +93,25 @@ void handle_client(tcp::socket client_socket) {
     target_port = target_port | port_data[1];
     std::cout << "[socks5_server] target_port:" << target_port << std::endl;
 
-    // std::array<std::uint8_t, 3> user_data;
-    // boost::asio::read(client_socket, boost::asio::buffer(user_data));
-    // std::string user_data_str{user_data.data()};
-    // std::cout << "[socks5_server] user_data:" << user_data_str << std::endl;
+    // Create a reply indicating success
+    std::vector<uint8_t> reply = {0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0};
+    boost::asio::write(client_socket, boost::asio::buffer(reply));
+    std::cout << "[socks5_server] reply client, ready to request target server.." << std::endl;
 
     // Connect to the target server
-    tcp::socket server_socket(client_socket.get_executor());
+    // tcp::socket server_socket(client_socket.get_executor());
+    ssl::context ssl_context(ssl::context::tlsv12_client);
+    ssl_context.set_default_verify_paths();
+    ssl::stream<tcp::socket> server_socket(client_socket.get_executor(), ssl_context);
     std::cout << "[socks5_server] create server socket." << std::endl;
 
     boost::asio::ip::tcp::resolver resolver(client_socket.get_executor());
     boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(domain_name, std::to_string(target_port).c_str());
-    boost::asio::connect(server_socket, endpoints);
+    boost::asio::connect(server_socket.lowest_layer(), endpoints);
     std::cout << "[socks5_server] connect server socket." << std::endl;
+
+    server_socket.handshake(ssl::stream_base::client);
+    std::cout << "[socks5_server] handshake." << std::endl;
 
     std::string request = "GET " + relative_url + " HTTP/1.1\r\n"
                         "Host: " + domain_name + "\r\n"
@@ -125,8 +136,9 @@ void handle_client(tcp::socket client_socket) {
 
     // Close the server_socket
     boost::system::error_code ec;
-    server_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
-    server_socket.close();
+    server_socket.shutdown(ec);
+    server_socket.lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    server_socket.lowest_layer().close();
   }
   catch (std::exception& e) {
       std::cerr << "Error: " << e.what() << std::endl;
