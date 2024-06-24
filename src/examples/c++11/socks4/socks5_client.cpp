@@ -4,7 +4,7 @@
 
 using boost::asio::ip::tcp;
 
-void socks5_connect(tcp::socket& socket, const std::string& dest_host, unsigned short dest_port) {
+void socks5_handshake_and_request(tcp::socket& socket, const std::string& dest_host, unsigned short dest_port) {
     boost::system::error_code ec;
 
     // SOCKS5 greeting
@@ -67,12 +67,12 @@ int main() {
         std::cout << "[socks5_client] connect socks5 server successfully.\n";
 
         // Set the destination address and port
-        std::string dest_host = "www.solidot.org/story?sid=78496";
+        std::string dest_host = "doc.rust-lang.org/book/ch12-01-accepting-command-line-arguments.html";
         // std::string dest_host = "www.solidot.org";
         unsigned short dest_port = 443;
 
         // Perform the SOCKS5 connection
-        socks5_connect(socket, dest_host, dest_port);
+        socks5_handshake_and_request(socket, dest_host, dest_port);
 
         // Read and print the response
         boost::asio::streambuf response;

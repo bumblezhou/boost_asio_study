@@ -12,6 +12,7 @@ sudo apt install build-essential
 sudo apt update
 sudo apt install libboost-all-dev
 sudo apt install libssl-dev
+sudo apt install libboost-thread-dev
 ```
 2. install VSCode
 3. install "C/C++ Extension Pack", "CMake Tools" extensions for VSCode
@@ -179,9 +180,21 @@ sudo apt install libssl-dev
     ./build/src/examples/c++11/socks4/request_with_proxy
     ./build/src/examples/c++11/socks4/request_without_proxy localhost 80 /
     ./build/src/examples/c++11/socks4/request_without_proxy 127.0.0.1 http /
-    ./build/src/examples/c++11/socks4/request_without_proxy https /doc/libs/1_85_0/doc/html/boost_asio/example/cpp11/socks4/sync_client.cpp
+    ./build/src/examples/c++11/socks4/request_without_proxy www.boost.org https /doc/libs/1_85_0/doc/html/boost_asio/example/cpp11/socks4/sync_client.cpp
     ./build/src/examples/c++11/socks4/socks5_server
     ./build/src/examples/c++11/socks4/socks5_client
+    ```
+
+16. ssl_proxy
+    * generate ssl key and cert files:
+    ```bash
+    openssl genrsa -out proxy.key 2048
+    openssl req -new -key proxy.key -out proxy.csr
+    openssl x509 -req -days 365 -in proxy.csr -signkey proxy.key -out proxy.crt
+    ```
+    * how to run:
+    ```bash
+    sudo ./build/src/examples/c++11/socks4/ssl_proxy
     ```
 
 ## How to do performance benchmarking for http servers:

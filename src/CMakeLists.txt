@@ -13,6 +13,7 @@ macro(add_custom_exe TARGET_NAME)
         pthread
         ssl
         crypto
+        boost_thread
     )
     target_compile_features(${TARGET_NAME} PRIVATE
         cxx_std_17
