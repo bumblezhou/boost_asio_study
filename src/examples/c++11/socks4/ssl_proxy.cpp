@@ -18,12 +18,33 @@ void forwardRequest(boost::asio::ssl::stream<tcp::socket>& ssl_socket) {
     // Forward the request to the destination server
     std::string request = boost::asio::buffer_cast<const char*>(request_buffer.data());
     std::cout << "Received request: " << request << std::endl;
+    std::string hostname, port;
+
+    // Parse the request to extract the hostname and port
+    // Assuming the request format is "GET / HTTP/1.1\r\nHost: destination.server.com:80\r\n..."
+    size_t host_start = request.find("Host: ");
+    if (host_start != std::string::npos) {
+        host_start += 6; // Move past "Host: "
+        size_t host_end = request.find(':', host_start);
+        size_t port_end = request.find("\r\n", host_end + 1);
+        if (host_end != std::string::npos && port_end != std::string::npos) {
+            hostname = request.substr(host_start, host_end - host_start);
+            port = request.substr(host_end + 1, port_end - host_end - 1);
+        }
+    }
+
+    if (hostname.empty() || port.empty()) {
+        std::cerr << "Invalid request format: Unable to extract destination server hostname and port." << std::endl;
+        return;
+    }
+
+    std::cout << "Forwarding request to: " << hostname << ":" << port << std::endl;
 
     // Create a connection to the destination server
     boost::asio::io_context destination_io_context;
     tcp::socket destination_socket(destination_io_context);
     tcp::resolver resolver(destination_io_context);
-    tcp::resolver::results_type endpoints = resolver.resolve("destination.server.com", "80");
+    tcp::resolver::results_type endpoints = resolver.resolve(hostname, port);
     boost::asio::connect(destination_socket, endpoints);
 
     // Send the request to the destination server
