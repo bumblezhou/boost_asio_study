@@ -17,3 +17,7 @@ add_custom_exe(socks5_server
 add_custom_exe(socks5_client
     ${CMAKE_SOURCE_DIR}/src/examples/c++11/socks4/socks5_client.cpp
 )
+
+add_custom_exe(ssl_proxy
+    ${CMAKE_SOURCE_DIR}/src/examples/c++11/socks4/ssl_proxy.cpp
+)
