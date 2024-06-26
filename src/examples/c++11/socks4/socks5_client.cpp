@@ -67,9 +67,9 @@ int main() {
         std::cout << "[socks5_client] connect socks5 server successfully.\n";
 
         // Set the destination address and port
-        std::string dest_host = "doc.rust-lang.org/book/ch12-01-accepting-command-line-arguments.html";
+        std::string dest_host = "salonchow.me";
         // std::string dest_host = "www.solidot.org";
-        unsigned short dest_port = 443;
+        unsigned short dest_port = 8443;
 
         // Perform the SOCKS5 connection
         socks5_handshake_and_request(socket, dest_host, dest_port);

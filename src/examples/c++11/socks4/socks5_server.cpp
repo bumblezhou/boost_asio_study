@@ -13,29 +13,26 @@ void handle_client(tcp::socket client_socket) {
     std::array<std::uint8_t, 3> handshake;
     boost::asio::read(client_socket, boost::asio::buffer(handshake));
     if (handshake[0] != 0x05) {
-        throw std::runtime_error("Invalid SOCKS5 version");
+        throw std::runtime_error("[socks5_server] Invalid SOCKS5 version");
     }
 
-    std::cout << "[socks5_server] receive SOCKS5 handshake request.\n";
-    std::cout << "[socks5_server] receive handshake[0]:" << handshake[0] << std::endl;
-    std::cout << "[socks5_server] receive handshake[1]:" << handshake[1] << std::endl;
-    std::cout << "[socks5_server] receive handshake[2]:" << handshake[2] << std::endl;
+    // std::cout << "[socks5_server] receive SOCKS5 handshake request.\n";
+    // std::cout << "[socks5_server] receive handshake[0]:" << handshake[0] << std::endl;
+    // std::cout << "[socks5_server] receive handshake[1]:" << handshake[1] << std::endl;
+    // std::cout << "[socks5_server] receive handshake[2]:" << handshake[2] << std::endl;
 
     // Respond with the supported version and chosen authentication method
     std::array<char, 2> handshake_response = {0x05, 0x00};
     boost::asio::write(client_socket, boost::asio::buffer(handshake_response));
-    std::cout << "[socks5_server] SOCKS5 handshake successfull.\n";
+    // std::cout << "[socks5_server] SOCKS5 handshake successfull.\n";
 
     // Read the client's request for target server
     std::array<std::uint8_t, 4> request_header;
-    std::cout << "[socks5_server] receive SOCKS5 http request.\n";
     boost::asio::read(client_socket, boost::asio::buffer(request_header));
 
     if (request_header[0] != 0x05 || request_header[1] != 0x01) {
-        throw std::runtime_error("Invalid SOCKS5 request");
+        throw std::runtime_error("[socks5_server] Invalid SOCKS5 request");
     }
-
-    std::cout << "[socks5_server] receive http request_header[3]: " << request_header[3] << std::endl;
 
     std::string target_address;
     std::string domain_name;
@@ -56,7 +53,6 @@ void handle_client(tcp::socket client_socket) {
           boost::asio::read(client_socket, boost::asio::buffer(url_length));
           
           std::vector<std::uint8_t> url(url_length[0]);
-          std::cout << "[socks5_server] 0x03 url_length[0]:" << url_length[0] << std::endl;
           boost::asio::read(client_socket, boost::asio::buffer(url));
           target_address = std::string(url.begin(), url.end());
 
@@ -67,6 +63,14 @@ void handle_client(tcp::socket client_socket) {
           } else {
             domain_name = target_address;
             relative_url = "/";
+          }
+          if (target_address.find("firefox.com") != std::string::npos 
+            || target_address.find("mozilla.org") != std::string::npos 
+            || target_address.find("mozilla.net") != std::string::npos 
+            || target_address.find("mozilla.com") != std::string::npos 
+            || target_address.find("getpocket.com") != std::string::npos
+            || target_address.find("google.com") != std::string::npos) {
+            return ;
           }
           std::cout << "[socks5_server] 0x03 target_address:" << target_address << std::endl;
           break;
@@ -99,24 +103,24 @@ void handle_client(tcp::socket client_socket) {
     std::cout << "[socks5_server] reply client, ready to request target server.." << std::endl;
 
     // Connect to the target server
-    // tcp::socket server_socket(client_socket.get_executor());
+    // tcp::socket proxy_socket(client_socket.get_executor());
     ssl::context ssl_context(ssl::context::tlsv12_client);
     ssl_context.set_default_verify_paths();
-    ssl::stream<tcp::socket> server_socket(client_socket.get_executor(), ssl_context);
-    std::cout << "[socks5_server] create server socket." << std::endl;
+    ssl::stream<tcp::socket> proxy_socket(client_socket.get_executor(), ssl_context);
+    std::cout << "[socks5_server] create a proxy socket." << std::endl;
 
     boost::asio::ip::tcp::resolver resolver(client_socket.get_executor());
     boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(domain_name, std::to_string(target_port).c_str());
-    boost::asio::connect(server_socket.lowest_layer(), endpoints);
-    std::cout << "[socks5_server] connect server socket." << std::endl;
+    boost::asio::connect(proxy_socket.lowest_layer(), endpoints);
+    std::cout << "[socks5_server] connect to target server." << std::endl;
 
-    server_socket.handshake(ssl::stream_base::client);
-    std::cout << "[socks5_server] handshake." << std::endl;
+    proxy_socket.handshake(ssl::stream_base::client);
+    std::cout << "[socks5_server] handshake to target server." << std::endl;
 
     std::string request = "GET " + relative_url + " HTTP/1.1\r\n"
                         "Host: " + domain_name + "\r\n"
                         "Connection: close\r\n\r\n";
-    boost::asio::write(server_socket, boost::asio::buffer(request));
+    boost::asio::write(proxy_socket, boost::asio::buffer(request));
     std::cout << "[socks5_server] send HTTP request:" << std::endl;
     std::cout << request;
 
@@ -124,7 +128,7 @@ void handle_client(tcp::socket client_socket) {
     boost::asio::streambuf response;
     boost::system::error_code error;
 
-    while (boost::asio::read(server_socket, response, boost::asio::transfer_at_least(1), error)) {
+    while (boost::asio::read(proxy_socket, response, boost::asio::transfer_at_least(1), error)) {
       boost::asio::write(client_socket, boost::asio::buffer(response.data()));
       std::cout << "[socks5_server] response to socks client with size:" << response.size() << std::endl;
       response.consume(response.size());
@@ -134,11 +138,11 @@ void handle_client(tcp::socket client_socket) {
         std::cerr << "Error reading response: " << error.message() << std::endl;
     }
 
-    // Close the server_socket
+    // Close the proxy_socket
     boost::system::error_code ec;
-    server_socket.shutdown(ec);
-    server_socket.lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
-    server_socket.lowest_layer().close();
+    proxy_socket.shutdown(ec);
+    proxy_socket.lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    proxy_socket.lowest_layer().close();
   }
   catch (std::exception& e) {
       std::cerr << "Error: " << e.what() << std::endl;
