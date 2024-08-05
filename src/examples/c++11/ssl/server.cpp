@@ -24,12 +24,14 @@ public:
 
   void start ()
   {
+    std::cout << "session->start()\n";
     do_handshake();
   }
 
 private:
   void do_handshake()
   {
+    std::cout << "session->do_handshake()\n";
     auto self(shared_from_this());
     socket_.async_handshake(boost::asio::ssl::stream_base::server, [this, self](const boost::system::error_code& error) {
       if (!error)
@@ -41,6 +43,7 @@ private:
   
   void do_read()
   {
+    std::cout << "session->do_read()\n";
     auto self(shared_from_this());
     socket_.async_read_some(boost::asio::buffer(data_), [this, self](const boost::system::error_code& error, std::size_t length) {
       if (!error)
@@ -52,6 +55,7 @@ private:
 
   void do_write(const std::size_t length)
   {
+    std::cout << "session->do_write()\n";
     auto self(shared_from_this());
     boost::asio::async_write(socket_, boost::asio::buffer(data_, length), [this, self] (const boost::system::error_code& error, std::size_t /*length*/) {
       if (!error)
@@ -86,11 +90,12 @@ public:
 private:
   std::string get_password() const
   {
+    std::cout << "server->get_password()\n";
     return "test";
   }
   void do_accept()
   {
-    std::cout << "do_accept\n";
+    std::cout << "server->do_accept()\n";
     acceptor_.async_accept([this](const boost::system::error_code& error, tcp::socket socket) {
       if (!error)
       {

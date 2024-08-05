@@ -35,6 +35,7 @@ public:
 private:
   bool verify_certificate(bool preverified, boost::asio::ssl::verify_context& ctx)
   {
+    std::cout << "client->verify_certificate()\n";
     // The verify callback can be used to check whether the certificate that is
     // being presented is valid for the peer. For example, RFC 2818 describes
     // the steps involved in doing this for HTTPS. Consult the OpenSSL
@@ -53,6 +54,7 @@ private:
 
   void connect(const tcp::resolver::results_type& endpoints)
   {
+    std::cout << "client->connect()\n";
     boost::asio::async_connect(socket_.lowest_layer(), endpoints, [this](const boost::system::error_code& error, const tcp::endpoint& /*endpoint*/) {
       if (!error)
       {
@@ -67,6 +69,7 @@ private:
 
   void handshake()
   {
+    std::cout << "client->handshake()\n";
     socket_.async_handshake(boost::asio::ssl::stream_base::client, [this](const boost::system::error_code& error) {
       if (!error)
       {
@@ -81,6 +84,7 @@ private:
 
   void send_request()
   {
+    std::cout << "client->send_request()\n";
     std::cout << "Enter message:";
     std::cin.getline(request_, max_length);
     size_t request_length = std::strlen(request_);
@@ -97,6 +101,7 @@ private:
 
   void receive_response(const std::size_t length)
   {
+    std::cout << "client->receive_response()\n";
     boost::asio::async_read(socket_, boost::asio::buffer(reply_, length), [this](const boost::system::error_code& error, std::size_t length) {
       if (!error)
       {
