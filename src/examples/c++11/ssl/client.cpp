@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
     auto endpoints = resolver.resolve(argv[1], argv[2]);
 
     boost::asio::ssl::context ctx(boost::asio::ssl::context::sslv23);
-    ctx.load_verify_file("ca.pem");
+    ctx.load_verify_file("server.pem");
 
     client c(io_context, ctx, endpoints);
 
